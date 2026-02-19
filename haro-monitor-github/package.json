@@ -1,0 +1,35 @@
+{
+  "name": "haro-monitor",
+  "version": "1.0.0",
+  "description": "Automatically scores HARO queries and sends Telegram alerts for relevant opportunities",
+  "main": "supabase/functions/haro-monitor/index.ts",
+  "scripts": {
+    "deploy": "supabase functions deploy haro-monitor",
+    "test": "supabase functions serve haro-monitor",
+    "logs": "supabase functions logs haro-monitor"
+  },
+  "keywords": [
+    "haro",
+    "help-a-reporter-out",
+    "media",
+    "pr",
+    "telegram",
+    "automation",
+    "ai",
+    "claude",
+    "supabase"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/haro-monitor.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
