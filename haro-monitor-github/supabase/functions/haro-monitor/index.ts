@@ -15,11 +15,11 @@ const supabase = createClient(
 // ── Configuration ──
 
 const SCORING_ANGLES = [
-  "Your expertise area 1 (e.g., bootstrapped SaaS)",
-  "Your expertise area 2 (e.g., AI-powered development)",  
-  "Your expertise area 3 (e.g., cold outreach)",
-  "Your expertise area 4 (e.g., customer retention)",
-  "Your expertise area 5 (e.g., psychology background)"
+  "QR-activated gamified prize wheels for restaurants — guest engagement, review collection, Wallet passes",
+  "AI-powered Google review management — automated reply generation, sentiment analysis, competitor intelligence",
+  "Restaurant marketing technology — loyalty programs, customer retention, digital transformation for hospitality",
+  "Cold outreach and lead generation — email automation, LRPI scoring, conversion optimization for SaaS",
+  "Bootstrapped SaaS founder perspective — 100+ restaurant clients across 6 countries, product-led growth",
 ];
 
 const SCORE_SYSTEM_PROMPT = `You score HARO (Help a Reporter Out) queries for pitch opportunity relevance.
@@ -56,33 +56,36 @@ async function scoreQuery(queryText: string): Promise<{score: number, angle: str
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 300,
         system: SCORE_SYSTEM_PROMPT,
         messages: [
           {
             role: 'user',
-            content: queryText.substring(0, 3000), // Limit length
+            content: queryText.substring(0, 3000),
           }
         ],
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`Anthropic API error: ${response.status}`);
+      const errText = await response.text();
+      throw new Error(`Anthropic API error: ${response.status} ${errText.slice(0, 200)}`);
     }
 
     const data = await response.json();
     const content = data.content[0]?.text || '';
-    
-    // Parse JSON response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+
+    // Parse JSON response — handle markdown code blocks and raw JSON
+    const cleaned = content.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('No JSON found in response');
+      throw new Error(`No JSON found in response: ${content.slice(0, 200)}`);
     }
-    
+
     const parsed = JSON.parse(jsonMatch[0]);
     
     return {
